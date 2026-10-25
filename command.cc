@@ -1,7 +1,3 @@
-/*
- * command.cc - Complete implementation for Lab 3 Mini Shell
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -14,7 +10,6 @@
 #include <glob.h>
 #include <wordexp.h>
 #include <errno.h>
-#include <limits.h>
 #include <vector>
 #include <string>
 #include <cctype>
@@ -23,7 +18,9 @@
 #include "command.h"
 #include "tokenizer.h"
 
-static char logFilePath[PATH_MAX] = "log.txt";
+const int MAX_PATH = 4200;
+
+static char logFilePath[MAX_PATH + 32] = "log.txt";
 
 static void writeChildLog(pid_t pid)
 {
@@ -170,7 +167,7 @@ void parse(std::vector<Token> &tokens)
             {
                 fprintf(stderr, "Syntax error: missing command after '|'\n");
                 free(currentSimpleCommand->_arguments);
-                free(currentSimpleCommand);
+                delete currentSimpleCommand;
                 currentCommand.clear();
                 return;
             }
@@ -668,7 +665,7 @@ SimpleCommand *Command::_currentSimpleCommand;
 
 int main()
 {
-    char cwd[PATH_MAX];
+    char cwd[MAX_PATH];
     if (getcwd(cwd, sizeof(cwd)) != NULL)
     {
         snprintf(logFilePath, sizeof(logFilePath), "%s/log.txt", cwd);
